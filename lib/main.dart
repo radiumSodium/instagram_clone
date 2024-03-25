@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:instagram_flutter/responsive/mobile_screen_layout.dart';
 import 'package:instagram_flutter/responsive/responsive_layout_screen.dart';
 import 'package:instagram_flutter/responsive/web_screen_layout.dart';
 import 'package:instagram_flutter/screens/login_screen.dart';
-import 'package:instagram_flutter/screens/signup_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 
 void main() async {
@@ -38,11 +38,30 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: mobileBackgroundColor,
       ),
-      // home: ResponsiveLayout(
-      //   webScreenLayout: WebScreenLayout(),
-      //   mobileScreenLayout: MobileScreenLayout(),
-      // ),
-      home: LoginScreen(),
+      home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshots) {
+            if (snapshots.connectionState == ConnectionState.active) {
+              if (snapshots.hasData) {
+                return const ResponsiveLayout(
+                  webScreenLayout: WebScreenLayout(),
+                  mobileScreenLayout: MobileScreenLayout(),
+                );
+              } else if (snapshots.hasError) {
+                return Center(
+                  child: Text('${snapshots.error}'),
+                );
+              }
+            }
+            if (snapshots.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: primaryColor,
+                ),
+              );
+            }
+            return const LoginScreen();
+          }),
     );
   }
 }

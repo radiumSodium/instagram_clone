@@ -6,18 +6,22 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_flutter/resources/auth_methods.dart';
+import 'package:instagram_flutter/responsive/mobile_screen_layout.dart';
+import 'package:instagram_flutter/responsive/responsive_layout_screen.dart';
+import 'package:instagram_flutter/responsive/web_screen_layout.dart';
+import 'package:instagram_flutter/screens/login_screen.dart';
 import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_field_input.dart';
 import '../utils/colors.dart';
 
-class signUpScreen extends StatefulWidget {
-  const signUpScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<signUpScreen> createState() => _signUpScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _signUpScreenState extends State<signUpScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
@@ -56,7 +60,24 @@ class _signUpScreenState extends State<signUpScreen> {
     });
     if (res != 'success') {
       showSnacBar(res, context);
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+            webScreenLayout: WebScreenLayout(),
+            mobileScreenLayout: MobileScreenLayout(),
+          ),
+        ),
+      );
     }
+  }
+
+  void navigateToLogin() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: ((context) => const LoginScreen()),
+      ),
+    );
   }
 
   @override
@@ -140,7 +161,10 @@ class _signUpScreenState extends State<signUpScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: const ShapeDecoration(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(4))),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(4),
+                      ),
+                    ),
                     color: blueColor,
                   ),
                 ),
@@ -155,10 +179,10 @@ class _signUpScreenState extends State<signUpScreen> {
                     padding: EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: navigateToLogin,
                     child: Container(
                       child: Text(
-                        "Sign in",
+                        "Login",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       padding: EdgeInsets.symmetric(vertical: 8),
