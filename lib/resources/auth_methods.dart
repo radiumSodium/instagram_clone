@@ -1,8 +1,10 @@
-import 'dart:typed_data';
+// ignore_for_file: unnecessary_null_comparison
 
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instagram_flutter/resources/storage_methods.dart';
+import 'package:instagram_flutter/models/user.dart' as model;
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -28,18 +30,24 @@ class AuthMethods {
 
         // print statement
         print(cred.user!.uid);
+
         String photoUrl = await StorageMethods()
             .uploadImageToStorage('profilePics', file, false);
 
-        _firestore.collection('users').doc(cred.user!.uid).set({
-          'username': username,
-          'uid': cred.user!.uid,
-          'email': email,
-          'bio': bio,
-          'followers': [],
-          'following': [],
-          'photoUrl': photoUrl,
-        });
+        model.User user = model.User(
+          username: username,
+          uid: cred.user!.uid,
+          email: email,
+          password: password,
+          bio: bio,
+          photoUrl: photoUrl,
+          followers: [],
+          following: [],
+        );
+
+        await _firestore.collection('users').doc(cred.user!.uid).set(
+              user.toJson(),
+            );
         res = 'success';
       }
     } catch (err) {
